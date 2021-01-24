@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### bpucker@cebitec.uni-bielefeld.de ###
-### v0.11 ###
+### v0.12 ###
 ### Long Read Walker (LRW) ###
 
 #USE FILTLONG to reduce coverage to 5x ???
@@ -404,9 +404,14 @@ def main( arguments ):
 	current_round = 1
 	cum_len = len( start_seq )
 	read_black_list = {}
+	fin_seq_collection = []	#collect sequence blocks if running in upstream mode ("up")
 	with open( result_seq_file, "w" ) as fin_seq_out:
 		with open( doc_file, "w" ) as doc_out:
-			fin_seq_out.write( ">result\n" + start_seq )
+			if direction == "down":
+				fin_seq_out.write( ">result\n" + start_seq )
+			else:
+				fin_seq_out.write( ">result\n" )
+				fin_seq_collection.append( start_seq )
 			while current_round < total_rounds:
 				# --- run BLAST search --- #
 				blast_result_file = output_folder + str( current_round ) + "_blast_hits.txt"
@@ -420,9 +425,17 @@ def main( arguments ):
 				
 				# --- add new sequence to final seq file --- #
 				if seq_to_add_info['orientation']:
-					fin_seq_out.write( all_reads[ seq_to_add_info['ID'] ][ seq_to_add_info['start']:seq_to_add_info['end'] ] )
+					seq = all_reads[ seq_to_add_info['ID'] ][ seq_to_add_info['start']:seq_to_add_info['end'] ]
+					if direction == "down":
+						fin_seq_out.write( seq )
+					else:
+						fin_seq_collection.append( seq )
 				else:
-					fin_seq_out.write( revcomp( all_reads[ seq_to_add_info['ID'] ][ seq_to_add_info['start']:seq_to_add_info['end'] ] ) )
+					seq = revcomp( all_reads[ seq_to_add_info['ID'] ][ seq_to_add_info['start']:seq_to_add_info['end'] ] )
+					if direction == "down":
+						fin_seq_out.write( seq )
+					else:
+						fin_seq_collection.append( seq )
 				
 				# --- take X kb from end of  best hit --- #
 				seed_file = output_folder + str( current_round ) + ".fasta"
@@ -434,6 +447,8 @@ def main( arguments ):
 						out.write( '>' + next_read_info['ID'] + "\n" + revcomp( seq ) + "\n" )
 				
 				current_round += 1
+		if direction == "up":
+			fin_seq_out.write( "".join( fin_seq_collection[::-1] ) )
 
 
 if '--reads' in sys.argv and '--seed' in sys.argv and '--out' in sys.argv:
