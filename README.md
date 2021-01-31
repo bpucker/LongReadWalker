@@ -22,6 +22,50 @@ LongReadWalker was tested on long read sequencing datasets of different species:
 3) [add upon publication]
 
 
+### Usage ###
+
+
+```
+Usage:
+  python LRW.py --reads <FILE> -seed <FILE> --out <DIR>
+
+Mandatory:
+  --reads     STR       FASTA/FASTQ file containing reads
+  --seed      STR       FASTA file containing start sequence
+  --out       STR       Output directory
+
+Optional:
+  --rounds    INT       Rounds of extension [5]
+  --block     INT       Query block size [2000]
+  --direction STR       Direction of extension (up|down) [down]
+  --simcut    INT       Minimal BLAST hit similarity [80]
+  --lencut    INT       Minimal BLAST hit length [500]
+  --threads   INT       Number of threads for BLAST [8]
+```
+				
+
+
+`--reads` specifies an input file in FASTA or FASTQ format containing the reads for the gap filling. gzip compressed files are supported and recognized by the file extension (.gz or .gzip). The file type is checked by reading the first few lines looking for '>' and '@' at the starts.
+
+`--seed` specifies an input file in FASTA format which contains the starting sequence (seed). This sequence should be the end of a contig where the extesion via long read walking should start.
+
+`--out` specifies an output folder where all result files and temporary files will be stored. This folder will be created if it does not exist already.
+
+`--rounds` specifies the number of extension rounds to perform. The number of required rounds can be estimated based on the read length distribution and the expected gap size. When ONT long reads are used, 10 rounds might be sufficient to cover 1 Mbp. Default value: 5.
+
+`--block` .
+
+`--direction` .
+
+`--simcut` .
+
+`--lencut` .
+
+`--threads` .
+
+
+
+
 ### Reference (how to cite) ###
 
 Please cite this github repository when using LongReadWalker. 
