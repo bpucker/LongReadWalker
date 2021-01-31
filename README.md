@@ -53,15 +53,15 @@ Optional:
 
 `--rounds` specifies the number of extension rounds to perform. The number of required rounds can be estimated based on the read length distribution and the expected gap size. When ONT long reads are used, 10 rounds might be sufficient to cover 1 Mbp. Default value: 5.
 
-`--block` .
+`--block` species the length of the query block used to find the next read (unit is basepairs). It is important to note that `--lencut` must always be smaller than `--block` to find overlaps. Default: 2000.
 
-`--direction` .
+`--direction` specifies if the gap is located upstream or downstream of the given sequence. Default is extension towards downstream (down).
 
-`--simcut` .
+`--simcut` specifies the minimal similarity of BLAST hits to be considered for the extension. This value must be smaller than the accuracy of the reads. Latest improvements in basecalling software might allow to increase this value up to 90%. Default: 80%.
 
-`--lencut` .
+`--lencut` specifies the minimal alignment length of BLAST hits to be considered for the extension. This parameter should not be used for stringent filtering, because BLAST was developed to find local alignments. Therefore, it is likely that the best match will not cover the entire query in one block. Default: 500bp.
 
-`--threads` .
+`--threads` specifies the number of threads used for the BLAST search. This step determines the run time and is repeated in each round. Default: 8 CPUs.
 
 
 
