@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/332404739.svg)](https://zenodo.org/badge/latestdoi/332404739)
+
 # LongReadWalker
 
 Inspired by primer walking in the first sequencing projects, this script is intended to close genome assembly gaps by long read walking. The focus is on a short run time and a very small number of depencencies (BLAST).
