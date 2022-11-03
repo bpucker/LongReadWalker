@@ -29,7 +29,7 @@ LongReadWalker was tested on long read sequencing datasets of different species:
 
 ```
 Usage:
-  python LRW.py --reads <FILE> -seed <FILE> --out <DIR>
+  python3 LRW.py --reads <FILE> -seed <FILE> --out <DIR>
 
 Mandatory:
   --reads     STR       FASTA/FASTQ file containing reads
