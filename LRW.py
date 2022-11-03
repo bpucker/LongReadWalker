@@ -1,12 +1,14 @@
 ### Boas Pucker ###
-### bpucker@cebitec.uni-bielefeld.de ###
-### v0.12 ###
+### b.pucker@tu-bs.de ###
+### v0.2 ###
 ### Long Read Walker (LRW) ###
 
 #USE FILTLONG to reduce coverage to 5x ???
 
+__cite__ = """Pucker, 2021: https://github.com/bpucker/LongReadWalker """
+
 __usage__ = """
-					python LRW.py
+					python3 LRW.py
 					--reads <READS_IN_FASTA_OR_FASTQ>
 					--seed <SEED_SEQUENCE_IN_FASTA>
 					--out <OUTPUT_FOLDER>
@@ -92,10 +94,11 @@ def analyze_BLAST_results_ORIGINAL( blast_result_file, block_size, all_reads, di
 	for i in range( 10 ):
 		try:
 			hit = sorted_hits[ i ]
-			print hit['ID'][:10] + " - " + str( hit['sim'] ) + " - " + str( hit['len'] ) + " - " + str( hit['sstart'] ) + " - " + str( hit['send'] ) + " - " + str( hit['score'] )
+			sys.stdout.write( hit['ID'][:10] + " - " + str( hit['sim'] ) + " - " + str( hit['len'] ) + " - " + str( hit['sstart'] ) + " - " + str( hit['send'] ) + " - " + str( hit['score'] ) + "\n")
 		except:
 			pass
-	print ""
+	sys.stdout.write( "\n")
+	sys.stdout.flush()
 	for hit in sorted_hits:
 		if direction == "down":	#continue extension towards downstream
 			if hit['sstart'] < hit['send']:	#forward hit
@@ -221,7 +224,7 @@ def analyze_BLAST_results( blast_result_file, block_size, all_reads, direction, 
 	
 	# --- merging all HSPs per subject --- #
 	merged_best_hits = []
-	for key in best_hits.keys():
+	for key in list( best_hits.keys() ):
 		merged = merge_HSPs( best_hits[ key ], block_size )
 		if merged['sim'] > sim_cut:
 			if merged['len'] > len_cut:
@@ -235,10 +238,11 @@ def analyze_BLAST_results( blast_result_file, block_size, all_reads, direction, 
 	for i in range( 10 ):
 		try:
 			hit = sorted_hits[ i ]
-			print hit['ID'][:10] + " - " + str( hit['sim'] ) + " - " + str( hit['len'] ) + " - " + str( hit['sstart'] ) + " - " + str( hit['send'] ) + " - " + str( hit['score'] )
+			sys.stdout.write( hit['ID'][:10] + " - " + str( hit['sim'] ) + " - " + str( hit['len'] ) + " - " + str( hit['sstart'] ) + " - " + str( hit['send'] ) + " - " + str( hit['score'] ) +"\n" )
 		except:
 			pass
-	print ""
+	sys.stdout.write( "\n" )
+	sys.stdout.flush()
 	for hit in sorted_hits:
 		if direction == "down":	#continue extension towards downstream
 			if hit['sstart'] < hit['send']:	#forward hit
