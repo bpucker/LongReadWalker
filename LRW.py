@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-bs.de ###
-### v0.2 ###
+### v0.21 ###
 ### Long Read Walker (LRW) ###
 
 #USE FILTLONG to reduce coverage to 5x ???
@@ -67,55 +67,6 @@ def revcomp( seq ):
 		except:
 			new_seq.append( 'n' )
 	return ''.join( new_seq[::-1] ).upper()
-
-
-def analyze_BLAST_results_ORIGINAL( blast_result_file, block_size, all_reads, direction, sim_cut, len_cut ):
-	"""! @brief find best BLAST hit which allows to extend sequence """
-	
-	best_hits = []
-	with open( blast_result_file, "r" ) as f:
-		line = f.readline()
-		while line:
-			parts = line.strip().split('\t')
-			if parts[0] != parts[1]:
-				if float( parts[2] ) > sim_cut:
-					if int( parts[3] ) > len_cut:
-						best_hits.append( { 	'ID': parts[1],
-															'qstart': int( parts[6] ),
-															'qend': int( parts[7] ),
-															'sstart': int( parts[8] ),
-															'send': int( parts[9] ),
-															'score': float( parts[-1] ),
-															'sim': float( parts[2] ),
-															'len': int( parts[3] )
-														} )
-			line = f.readline()
-	sorted_hits = sorted( best_hits, key=itemgetter('score') )[::-1]	#sorted by decreasing score
-	for i in range( 10 ):
-		try:
-			hit = sorted_hits[ i ]
-			sys.stdout.write( hit['ID'][:10] + " - " + str( hit['sim'] ) + " - " + str( hit['len'] ) + " - " + str( hit['sstart'] ) + " - " + str( hit['send'] ) + " - " + str( hit['score'] ) + "\n")
-		except:
-			pass
-	sys.stdout.write( "\n")
-	sys.stdout.flush()
-	for hit in sorted_hits:
-		if direction == "down":	#continue extension towards downstream
-			if hit['sstart'] < hit['send']:	#forward hit
-				if len( all_reads[ hit['ID'] ] ) - hit['send'] > block_size:
-					return { 'ID': hit['ID'], 'start': len( all_reads[ hit['ID'] ] )-block_size-1, 'end': len( all_reads[ hit['ID'] ] )-1, 'orientation': True }, { 'ID': hit['ID'], 'start': hit['send'], 'end': len( all_reads[ hit['ID'] ] )-1, 'orientation': True }
-			else:	#reverse hit
-				if hit['send'] > block_size:
-					return { 'ID': hit['ID'], 'start': 1, 'end': block_size, 'orientation': False }, { 'ID': hit['ID'], 'start': 1, 'end': hit['send'], 'orientation': False }
-			#return: ID, start, end, orientation (T=keep like this; F=revcomp)
-		else:	#continue extension towards upstream
-			if hit['sstart'] < hit['send']:	#forward hit
-				if hit['sstart'] > block_size:
-					return { 'ID': hit['ID'], 'start': 1, 'end': block_size, 'orientation': True }, { 'ID': hit['ID'], 'start': 1, 'end': hit['sstart'], 'orientation': True }
-			else:	#reverse hit
-				if len( all_reads[ hit['ID'] ] )-hit['send'] > block_size:
-					return { 'ID': hit['ID'], 'start': len( all_reads[ hit['ID'] ] )-block_size-1, 'end': len( all_reads[ hit['ID'] ] )-1, 'orientation': False }, { 'ID': hit['ID'], 'start': hit['send'], 'end': len( all_reads[ hit['ID'] ] )-1, 'orientation': False }
-	sys.exit( "ERROR: no suitable read for extension detected" )
 
 
 def merge_HSPs( input_hits, block_size ):
