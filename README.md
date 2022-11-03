@@ -19,7 +19,7 @@ If both flanking sequences of a gap are known, the gap filling via long read wal
 ### Validation and benchmarking ###
 
 LongReadWalker was tested on long read sequencing datasets of different species:
-1) Arabidopsis thaliana: Based on a flanking sequence, a fictive gap of 1 Mbp was assembled in 10 steps. This gap filling was performed in both directions and validated through comparison against the A. thaliana TAIR10 reference genome sequence via dot plots.
+1) _Arabidopsis thaliana_: Based on a flanking sequence, a fictive gap of 1 Mbp was assembled in 10 steps. This gap filling was performed in both directions and validated through comparison against the _A. thaliana_ TAIR10 reference genome sequence via dot plots.
 2) [add upon publication]
 3) [add upon publication]
 
