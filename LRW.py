@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-bs.de ###
-### v0.21 ###
+### v0.22 ###
 ### Long Read Walker (LRW) ###
 
 #USE FILTLONG to reduce coverage to 5x ???
@@ -218,12 +218,13 @@ def get_read_file_type( read_file ):
 	
 	if read_file.split('.')[-1] in [ "gz", "gzip", "GZ", "GZIP" ]:	#compressed read input file
 		with gzip.open( read_file, "rb" ) as f:
-			line = f.readline()
+			line = f.readline().decode('ascii')
 			if line[0] == ">":
 				return "fasta"
 			elif line[0] == "@":
 				return "fastq"
 			else:
+				print( line )
 				sys.exit( "ERROR: read input file type not recognized" )
 	else:
 		with open( read_file, "r" ) as f:
@@ -242,7 +243,7 @@ def load_sequences_fastq( read_file ):
 	sequences = {}
 	if read_file.split('.')[-1] in [ "gz", "gzip", "GZ", "GZIP" ]:	#compressed read input file
 		with gzip.open( read_file, "rb" ) as f:
-			line = f.readline()
+			line = f.readline().decode('ascii')
 			while line:
 				header = line.strip()
 				if " " in header:
@@ -251,7 +252,7 @@ def load_sequences_fastq( read_file ):
 				sequences.update( { header: seq } )
 				f.readline()	#useless row
 				f.readline()	#quality row
-				line = f.readline()
+				line = f.readline().decode('ascii')
 	else:	#uncompressed read input file
 		with open( read_file, "r" ) as f:
 			line = f.readline()
@@ -274,12 +275,12 @@ def fastq2fasta( read_file, output_folder ):
 	if read_file.split('.')[-1] in [ "gz", "gzip", "GZ", "GZIP" ]:	#compressed read input file
 		with open( fasta_file, "w" ) as out:
 			with gzip.open( read_file, "rb" ) as f:
-				line = f.readline()
+				line = f.readline().decode('ascii')
 				while line:
-					out.write( '>' + line + f.readline() )
+					out.write( '>' + line + f.readline().decode('ascii') )
 					f.readline()	#useless line
 					f.readline()	#sequence quality
-					line = f.readline()
+					line = f.readline().decode('ascii')
 	else:
 		with open( fasta_file, "w" ) as out:
 			with open( read_file, "r" ) as f:
