@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### b.pucker@tu-bs.de ###
-### v0.22 ###
+### v0.23 ###
 ### Long Read Walker (LRW) ###
 
 #USE FILTLONG to reduce coverage to 5x ???
@@ -24,7 +24,7 @@ __usage__ = """
 					bug reports and feature requests: bpucker@cebitec.uni-bielefeld.de
 					"""
 
-import sys, os, re, gzip
+import sys, os, re, gzip, subprocess
 from operator import itemgetter
 
 # --- end of imports --- #
@@ -341,22 +341,26 @@ def main( arguments ):
 			read_file_type = "fasta"
 	
 	if read_file.split('.')[-1] in [ "gz", "gzip", "GZ", "GZIP" ]:
-		os.popen( "cp " + read_file + " " + output_folder + "reads.fasta.gz" )
-		os.popen( "gunzip " + output_folder + "reads.fasta.gz" )
+		p = subprocess.Popen( args= "cp " + read_file + " " + output_folder + "reads.fasta.gz", shell=True )
+		p.communicate()
+		p = subprocess.Popen( args= "gunzip " + output_folder + "reads.fasta.gz", shell=True )
+		p.communicate()
 		read_file = output_folder + "reads.fasta"
 	
-	os.popen( "makeblastdb -in " + read_file + " -out " + blastdb + " -dbtype nucl" )
+	p = subprocess.Popen( args= "makeblastdb -in " + read_file + " -out " + blastdb + " -dbtype nucl", shell=True )
+	p.communicate()
 
 	all_reads = load_sequences( read_file )
 	blast_results_file = output_folder + "results.txt"
 
 	seed_file = output_folder + "0.fasta"
-	os.popen( "cp " + start_seq_file + " " + seed_file )
+	p = subprocess.Popen( args= "cp " + start_seq_file + " " + seed_file, shell=True )
+	p.communicate()
 
 	result_seq_file = output_folder + "resulting_sequence.fasta"
 	doc_file = output_folder + "doc.txt"
 
-	start_seq = load_sequences( seed_file ).values()[0]
+	start_seq = list( load_sequences( seed_file ).values() )[0]
 	current_round = 1
 	cum_len = len( start_seq )
 	read_black_list = {}
@@ -371,7 +375,8 @@ def main( arguments ):
 			while current_round < total_rounds:
 				# --- run BLAST search --- #
 				blast_result_file = output_folder + str( current_round ) + "_blast_hits.txt"
-				os.popen( "blastn -query " + seed_file + " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( threads ) )
+				p = subprocess.Popen( args= "blastn -query " + seed_file + " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( threads ), shell=True )
+				p.communicate()
 				
 				# --- find best hit in different (!) read and collect infos for sequence extraction --- #
 				next_read_info, seq_to_add_info = analyze_BLAST_results( blast_result_file, block_size, all_reads, direction, sim_cut, len_cut, read_black_list )
